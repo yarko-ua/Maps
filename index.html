@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>GoogleMaps</title>
+    <style>
+        /* Set the size of the div element that contains the map */
+        #map {
+            height: 500px;
+            /* The height is 400 pixels */
+            width: 100%;
+            /* The width is the width of the web page */
+        }
+
+        button {
+            width: max-content;
+            height: 30px;
+            background-image: linear-gradient(90deg, blue 50%, yellow 90%, black);
+            border-radius: 10px;
+            color: #fff;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <button id="Kyiv">Kyiv</button>
+    <button id="Odessa">Odessa</button>
+    <button id="IF">Ivano-Frankivsk</button>
+    <!--The div element for the map -->
+    <div id="map"></div>
+
+    <script>
+        // Initialize and add the map
+        function initMap(target) {
+            // The location of Uluru
+            var city;
+            let markerImg;
+            let text;
+            if (target == undefined) {
+                city = { lat: 48.464718, lng: 35.046185 };
+                markerImg = undefined;
+                text = 'standart info/no info';
+            } else {
+                city = { lat: +target.lat, lng: +target.long };
+                markerImg = target.marker;
+                text = target.text;
+            }
+            // The map, centered at Uluru
+            var map = new google.maps.Map(
+                document.getElementById('map'), { zoom: 6, center: city });
+            // The marker, positioned at Uluru 
+            var marker = new google.maps.Marker({
+                position: city, map: map,
+                icon: { url: markerImg, scaledSize: new google.maps.Size(36, 36) }
+            });
+
+            marker.addListener('click', function () {
+                infowindow.open(map, marker);
+            });
+            //infoWindow
+            let infowindow = new google.maps.InfoWindow({
+                content: text
+            });
+        }
+
+        class CityPosition {
+            constructor(lat, long, url, text) {
+                this.lat = lat;
+                this.long = long;
+                this.marker = url;
+                this.text = text;
+            }
+
+            get coordinates() {
+                return [this.lat, this.long];
+            }
+
+            set coordinates(newcoordinates) {
+                let arr = newcoordinates.split(',');
+                this.lat = arr[0];
+                this.long = arr[1];
+            }
+        }
+
+        let Kyiv = new CityPosition(50.447731, 30.542721, 'https://image.flaticon.com/icons/png/512/1612/1612564.png', 'Купуємо цибулю по 50');
+        console.log('kyiv:', Kyiv.lat, Kyiv.long);
+        let IF = new CityPosition(48.922634, 24.711117, 'https://cdn1.iconfinder.com/data/icons/vegetables-1-flat/33/beetrot-512.png', 'Бурячки обєднаємось!!!');
+        console.log('iv:', IF.coordinates);
+        let Odessa = new CityPosition(46.482525, 30.723309, 'https://www.pinclipart.com/picdir/middle/73-730178_derpy-batman-derp-batman-png-clipart.png', 'Шалом папалом')
+        console.log('odessa:', Odessa.coordinates);
+
+        for (let i = 0; i < document.querySelectorAll('button').length; i++) {
+            document.querySelectorAll('button')[i].addEventListener('click', event => {
+                if (event.target.id == 'Kyiv') {
+                    initMap(Kyiv);
+                } else if (event.target.id == 'Odessa') {
+                    initMap(Odessa);
+                } else {
+                    initMap(IF);
+                }
+
+            })
+        }
+
+    </script>
+    <script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBZSFNoes5FJvhoj0XQ_97-2oxvE7F3tfw&callback=initMap"
+        type="text/javascript"></script>
+</body>
+
+</html>
